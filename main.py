@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException , status
-from schemas import TaskCreate
+from schemas import TaskCreate, TaskUpdate
 
 app = FastAPI()
 
@@ -69,3 +69,26 @@ def create_task(task: TaskCreate):
      
      tasks.append(new_task)
      return new_task
+
+
+
+@app.put("/tasks/{id}")
+def update_task(id: int, updated_task: TaskUpdate):
+     for task in tasks:
+          if task["id"] == id:
+               task["title"] = updated_task.title
+               task["completed"] = updated_task.completed
+               return task
+          
+     raise HTTPException(status_code = 404, detail = "Task Not Found")
+
+
+
+@app.delete("/tasks/{id}", status_code = status.HTTP_204_NO_CONTENT)
+def delete_task(id: int):
+     for index,task in enumerate(tasks):
+          if task["id"] == id:
+               tasks.pop(index)
+               return
+     
+     raise HTTPException(status_code= 404, detail = "Task Not Found")
