@@ -1,6 +1,23 @@
-from fastapi import FastAPI
-
+from fastapi import FastAPI, HTTPException
 app = FastAPI()
+
+tasks = [
+    {
+        "id": 1,
+        "title": "Learn FastAPI",
+        "completed": False
+    },
+    {
+        "id": 2,
+        "title": "Build CRUD API",
+        "completed": False
+    },
+    {
+         "id": 3,
+         "title": "Write README",
+         "completed": True
+    }
+]
 
 @app.get("/")
 def root():
@@ -16,3 +33,16 @@ def health():
      return { 
              "status" : "ok"
      }
+     
+
+@app.get("/tasks")
+def task():
+     return tasks
+
+
+@app.get("/tasks/{id}")
+def get_task(id: int):
+    for task in tasks:
+        if task["id"] == id:
+            return task
+    raise HTTPException(status_code=404, detail="Task not found")     
