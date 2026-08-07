@@ -26,6 +26,8 @@ The API started with in-memory task storage and was later connected to SQLite. T
 
 - Create, read, update, and delete tasks
 - SQLite database for persistent storage
+- SQL-based task search
+- Filter tasks by completion status
 - Pydantic request validation
 - Parameterized SQL queries
 - Empty task title validation
@@ -75,14 +77,16 @@ The API started with in-memory task storage and was later connected to SQLite. T
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | / | Returns basic API information |
-| GET | /health | Health check |
-| GET | /tasks | Returns all tasks |
-| GET | /tasks/{id} | Returns one task |
-| POST | /tasks | Creates a new task |
-| PUT | /tasks/{id} | Updates an existing task |
-| DELETE | /tasks/{id} | Deletes a task |
-
+| GET | `/` | Returns basic API information |
+| GET | `/health` | Health check |
+| GET | `/tasks` | Returns all tasks |
+| GET | `/tasks/{id}` | Returns one task |
+| POST | `/tasks` | Creates a new task |
+| PUT | `/tasks/{id}` | Updates an existing task |
+| DELETE | `/tasks/{id}` | Deletes a task |
+| GET | `/tasks?search=FastAPI` | Searches tasks by title |
+| GET | `/tasks?completed=true` | Returns completed tasks |
+| GET | `/tasks?completed=false` | Returns incomplete tasks |
 ---
 
 ## Example Request
@@ -233,6 +237,26 @@ curl -X PUT http://127.0.0.1:8000/tasks/1 \
 ```bash
 curl -X DELETE http://127.0.0.1:8000/tasks/1
 ```
+---
+
+## Optional SQL Features
+
+Tasks can also be searched and filtered directly through SQL queries.
+
+### Search Tasks
+
+```text
+GET /tasks?search=FastAPI
+```
+Uses SQL `LIKE` to search task titles.
+
+### Filter by Completion Status
+
+```text
+GET /tasks?completed=true
+GET /tasks?completed=false
+```
+Uses a SQL `WHERE completed = ?` condition to return tasks by their completion status.
 
 ---
 
@@ -264,6 +288,7 @@ curl -X DELETE http://127.0.0.1:8000/tasks/1
 - Using Pydantic for request validation
 - Performing CRUD operations with SQLite
 - Using parameterized SQL queries
+- Using SQL `LIKE` and `WHERE` clauses for database-level filtering
 - Understanding database persistence across server restarts
 - Testing APIs using Swagger UI and command-line requests
 - Exploring and modifying a SQLite database directly using DB Browser for SQLite

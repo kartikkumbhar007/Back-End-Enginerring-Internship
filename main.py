@@ -1,6 +1,6 @@
-from fastapi import FastAPI, HTTPException , status
+from fastapi import FastAPI, HTTPException , status, Query
 from schemas import TaskCreate, TaskUpdate
-from database import get_all_tasks, get_task_by_id, add_task, update_task, delete_task
+from database import get_all_tasks, get_task_by_id, add_task, update_task, delete_task, search_tasks, get_tasks_by_status
 
 
 app = FastAPI()
@@ -40,8 +40,17 @@ def health():
      
 
 @app.get("/tasks")
-def task():
-     return get_all_tasks()
+def task(
+    search: str | None = Query(None),
+    completed: bool | None = Query(None)
+):
+    if search is not None:
+        return search_tasks(search)
+
+    if completed is not None:
+        return get_tasks_by_status(completed)
+
+    return get_all_tasks()
 
 
 

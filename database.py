@@ -62,6 +62,47 @@ def get_all_tasks():
             for row in rows
         ]
         
+def search_tasks(search):
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT * FROM tasks WHERE title LIKE ?",
+            (f"%{search}%",)
+        )
+
+        rows = cursor.fetchall()
+
+        return [
+            {
+                "id": row[0],
+                "title": row[1],
+                "completed": bool(row[2])
+            }
+            for row in rows
+        ]
+
+
+def get_tasks_by_status(completed):
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT * FROM tasks WHERE completed = ?",
+            (completed,)
+        )
+
+        rows = cursor.fetchall()
+
+        return [
+            {
+                "id": row[0],
+                "title": row[1],
+                "completed": bool(row[2])
+            }
+            for row in rows
+        ]
+        
         
 def get_task_by_id(task_id):
     with get_connection() as connection:
@@ -94,5 +135,42 @@ def add_task(title):
         return get_task_by_id(task_id)
     
     
+def update_task(task_id, title, completed):
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        
+        cursor.execute(""" 
+                       UPDATE tasks
+                       SET title = ? , completed = ?
+                       WHERE id = ?
+                       """, 
+                       (title, completed, task_id)
+                       )
+        
+        connection.commit()
+        
+        if cursor.rowcount == 0:
+            return None
+        
+        return get_task_by_id(task_id)
+
+
+def delete_task(task_id):
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "DELETE FROM tasks WHERE id = ?",
+            (task_id,)
+        )
+
+        if cursor.rowcount == 0:
+            return False
+
+        connection.commit()
+
+        return True
+    
+        
 create_table()
 seed_tasks()
