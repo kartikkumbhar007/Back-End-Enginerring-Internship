@@ -80,5 +80,19 @@ def get_task_by_id(task_id):
         else:
             return None        
 
+
+def add_task(title):
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        
+        cursor.execute("INSERT INTO tasks (title,completed) VALUES (?,?)",(title,False))
+        
+        task_id = cursor.lastrowid
+        
+        connection.commit()
+        
+        return get_task_by_id(task_id)
+    
+    
 create_table()
 seed_tasks()
