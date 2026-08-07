@@ -1,128 +1,244 @@
+<div align="center">
+
 # Task API
 
-A simple FastAPI app for managing tasks.
+A simple database-backed CRUD API built with FastAPI and SQLite.
+
+<p>
+	<img src="https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white" alt="Python">
+	<img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+	<img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white" alt="SQLite">
+</p>
+
+</div>
+
+---
+
+## About
+
+This project is a simple Task CRUD API built as part of a backend engineering internship assignment.
+
+The API started with in-memory task storage and was later connected to SQLite. Tasks can now be created, viewed, updated, and deleted while remaining persistent across server restarts.
+
+---
 
 ## Features
 
-- Add, view, update, and delete tasks
-- Built with FastAPI and Pydantic
-- Has a health check route
-- Includes Swagger UI and ReDoc
+- Create, read, update, and delete tasks
+- SQLite database for persistent storage
+- Pydantic request validation
+- Parameterized SQL queries
+- Empty task title validation
+- HTTP status code handling
+- Health check endpoint
+- Interactive Swagger UI
+- ReDoc API documentation
+
+---
+
+## Tech Stack
+
+- Python
+- FastAPI
+- Pydantic
+- SQLite
+- Uvicorn
+
+---
 
 ## Project Structure
 
-- `main.py` - app and routes
-- `schemas.py` - request models
-- `requirements.txt` - Python packages
-- `screenshots/` - example images
+```text
+.
+├── main.py
+├── database.py
+├── schemas.py
+├── requirements.txt
+├── screenshots/
+└── tasks.db
+```
+
+| File / Folder | Description |
+| --- | --- |
+| main.py | FastAPI application and API routes |
+| database.py | SQLite connection and database operations |
+| schemas.py | Pydantic request models |
+| requirements.txt | Project dependencies |
+| screenshots/ | Screenshots of the API and SQLite work |
+| tasks.db | Local SQLite database file |
+
+> tasks.db is a local database file and should be ignored by Git.
+
+---
 
 ## API Endpoints
 
-### `GET /`
-Returns basic project info and the main endpoint list.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | / | Returns basic API information |
+| GET | /health | Health check |
+| GET | /tasks | Returns all tasks |
+| GET | /tasks/{id} | Returns one task |
+| POST | /tasks | Creates a new task |
+| PUT | /tasks/{id} | Updates an existing task |
+| DELETE | /tasks/{id} | Deletes a task |
 
-### `GET /health`
-Returns a simple health response:
+---
 
-```json
-{
-  "status": "ok"
-}
-```
+## Example Request
 
-### `GET /tasks`
-Returns all saved tasks.
-
-### `GET /tasks/{id}`
-Returns one task by ID.
-
-### `POST /tasks`
-Creates a task.
-
-Request body:
+### Create a Task
 
 ```json
 {
-  "title": "Learn FastAPI"
+	"title": "Learn FastAPI"
 }
 ```
 
-New tasks start with `completed: false`.
-
-### `PUT /tasks/{id}`
-Updates a task.
-
-Request body:
+New tasks are created with:
 
 ```json
 {
-  "title": "Updated task title",
-  "completed": true
+	"completed": false
 }
 ```
 
-### `DELETE /tasks/{id}`
-Deletes a task by ID.
+### Update a Task
 
-## Validation And Behavior
+```json
+{
+	"title": "Learn FastAPI deeply",
+	"completed": true
+}
+```
 
-- Task titles cannot be empty.
-- Tasks are stored in memory, so they reset when the server restarts.
-- `GET /tasks/{id}`, `PUT /tasks/{id}`, and `DELETE /tasks/{id}` return `404` if the task is missing.
+---
 
-## Running The Project
+## Database
 
-1. Create and activate a virtual environment.
-2. Install the packages:
+This project uses **SQLite** for task storage.
+
+SQLite was chosen because:
+
+- The database is stored in a single file.
+- It does not require a separate database server.
+- Data survives when the FastAPI server is stopped and started again.
+
+The database file is:
+
+```text
+tasks.db
+```
+
+The `tasks` table is created automatically when the application starts.
+
+If the table is empty, the application inserts three seed tasks:
+
+1. Learn FastAPI
+2. Build CRUD API
+3. Write README
+
+### Table Schema
+
+| Column | Type | Description |
+| --- | --- | --- |
+| id | INTEGER | Primary key with auto-increment |
+| title | TEXT | Task title |
+| completed | BOOLEAN | Task completion status |
+
+---
+
+## Validation and Behavior
+
+- Empty or whitespace-only task titles return HTTP `400`.
+- Missing task IDs return HTTP `404`.
+- Successful task creation returns HTTP `201 Created`.
+- Successful task deletion returns HTTP `204 No Content`.
+- Tasks persist across server restarts.
+- SQL queries use parameterized placeholders instead of string concatenation.
+
+---
+
+## Exploring SQLite
+
+DB Browser for SQLite was used to execute SQL directly against the `tasks.db` file.
+
+Example query:
+
+```sql
+SELECT * FROM tasks WHERE completed = 1;
+```
+
+This returns only completed tasks.
+
+The database was also updated manually using:
+
+```sql
+UPDATE tasks SET completed = 1;
+```
+
+After saving the database change in DB Browser for SQLite, the API reflected the updated `completed` values through `GET /tasks` without restarting FastAPI.
+
+This demonstrated that the API and DB Browser for SQLite were reading the same database file.
+
+---
+
+## Getting Started
+
+### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Start the server:
+### 2. Start the Server
 
 ```bash
 uvicorn main:app --reload
 ```
 
-4. Open the docs in your browser:
+### 3. Open API Documentation
 
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- ReDoc: `http://127.0.0.1:8000/redoc`
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+
+---
 
 ## Example Usage
 
-### List tasks
+### List Tasks
 
 ```bash
 curl http://127.0.0.1:8000/tasks
 ```
 
-### Create a task
+### Create a Task
 
 ```bash
 curl -X POST http://127.0.0.1:8000/tasks \
-  -H "Content-Type: application/json" \
-  -d "{\"title\": \"Write README\"}"
+	-H "Content-Type: application/json" \
+	-d "{\"title\": \"Write README\"}"
 ```
 
-### Update a task
+### Update a Task
 
 ```bash
 curl -X PUT http://127.0.0.1:8000/tasks/1 \
-  -H "Content-Type: application/json" \
-  -d "{\"title\": \"Learn FastAPI deeply\", \"completed\": true}"
+	-H "Content-Type: application/json" \
+	-d "{\"title\": \"Learn FastAPI deeply\", \"completed\": true}"
 ```
 
-### Delete a task
+### Delete a Task
 
 ```bash
 curl -X DELETE http://127.0.0.1:8000/tasks/1
 ```
 
+---
+
 ## Screenshots
 
-The `screenshots/` folder has example images from the app:
+### Assignment 1 API
 
 ![Create Task](screenshots/Create%20Task.png)
 
@@ -134,7 +250,20 @@ The `screenshots/` folder has example images from the app:
 
 ![Update Task](screenshots/Update%20Task.png)
 
-## Notes
+### Stage 4: Exploring SQLite
 
-- This project uses in-memory storage only.
-- If you want to keep tasks after restart, you can later move them to a database..
+![Database Update](screenshots/Database%20Update.png)
+
+![API Reflects Database Change](screenshots/API%20Reflects%20Database%20Change.png)
+
+---
+
+## What I Learned
+
+- Building REST API endpoints with FastAPI
+- Using Pydantic for request validation
+- Performing CRUD operations with SQLite
+- Using parameterized SQL queries
+- Understanding database persistence across server restarts
+- Testing APIs using Swagger UI and command-line requests
+- Exploring and modifying a SQLite database directly using DB Browser for SQLite
