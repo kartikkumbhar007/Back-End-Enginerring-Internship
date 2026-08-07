@@ -137,4 +137,4 @@ The `screenshots/` folder has example images from the app:
 ## Notes
 
 - This project uses in-memory storage only.
-- If you want to keep tasks after restart, you can later move them to a database.
+- If you want to keep tasks after restart, you can later move them to a database..
