@@ -292,3 +292,31 @@ Uses a SQL `WHERE completed = ?` condition to return tasks by their completion s
 - Understanding database persistence across server restarts
 - Testing APIs using Swagger UI and command-line requests
 - Exploring and modifying a SQLite database directly using DB Browser for SQLite
+
+---
+
+## PostgreSQL with Docker
+
+Start PostgreSQL:
+
+```bash
+docker run --name taskdb -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=tasks -p 5432:5432 -v taskdata:/var/lib/postgresql/data -d postgres:17
+```
+
+Check the running container:
+
+```bash
+docker ps
+```
+
+Connect to PostgreSQL:
+
+```bash
+docker exec -it taskdb psql -U postgres -d tasks
+```
+
+Exit PostgreSQL:
+
+```text
+\q
+```
