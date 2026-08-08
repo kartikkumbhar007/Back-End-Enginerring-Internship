@@ -315,7 +315,8 @@ Connect to PostgreSQL:
 docker exec -it taskdb psql -U postgres -d tasks
 ```
 
-Exit PostgreSQL:
+
+Exit PostgreSQL :
 
 ```text
 \q
