@@ -2,323 +2,494 @@
 
 # Task API
 
-A simple database-backed CRUD API built with FastAPI and SQLite.
+A RESTful Task Management API built with **FastAPI, PostgreSQL, Docker Compose, and Supabase Authentication**.
 
 <p>
-	<img src="https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white" alt="Python">
-	<img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
-	<img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase&logoColor=white" alt="Supabase">
+  <img src="https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white" alt="Docker">
 </p>
 
 </div>
 
 ---
 
-## About
+# About
 
-This project is a simple Task CRUD API built as part of a backend engineering internship assignment.
+This project was built as part of a **Backend Engineering Internship**.
 
-The API started with in-memory task storage and was later connected to SQLite. Tasks can now be created, viewed, updated, and deleted while remaining persistent across server restarts.
+It is a RESTful Task Management API built with FastAPI and PostgreSQL. The project demonstrates CRUD operations, database integration, user authentication, JWT-based protected routes, and interactive API documentation using Swagger UI.
+
+The application uses **Supabase Auth** for user signup, login, logout, and JWT verification.
+
+The complete application can be started using Docker Compose.
 
 ---
 
-## Features
+# Features
 
 - Create, read, update, and delete tasks
-- SQLite database for persistent storage
-- SQL-based task search
+- PostgreSQL database integration
+- Docker Compose setup
+- Automatic database table creation
+- Automatic sample task seeding
+- Search tasks by title
 - Filter tasks by completion status
-- Pydantic request validation
+- Request validation using Pydantic
 - Parameterized SQL queries
-- Empty task title validation
-- HTTP status code handling
-- Health check endpoint
+- Proper HTTP status handling
+- User signup
+- User login
+- User logout
+- JWT-based authentication
+- Protected API routes
+- Token verification using Supabase Auth
+- Public and protected endpoints
 - Interactive Swagger UI
-- ReDoc API documentation
+- Bearer token authorization in Swagger UI
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-- Python
-- FastAPI
-- Pydantic
-- SQLite
-- Uvicorn
+- **Python 3.13**
+- **FastAPI**
+- **Pydantic**
+- **PostgreSQL**
+- **Psycopg**
+- **Supabase Auth**
+- **Docker**
+- **Docker Compose**
+- **Swagger UI**
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 .
-├── main.py
+├── auth.py
 ├── database.py
+├── main.py
 ├── schemas.py
+├── supabase_client.py
+├── Dockerfile
+├── compose.yaml
 ├── requirements.txt
-├── screenshots/
-└── tasks.db
+├── .env.example
+├── .gitignore
+├── README.md
+└── screenshots/
 ```
 
-| File / Folder | Description |
-| --- | --- |
-| main.py | FastAPI application and API routes |
-| database.py | SQLite connection and database operations |
-| schemas.py | Pydantic request models |
-| requirements.txt | Project dependencies |
-| screenshots/ | Screenshots of the API and SQLite work |
-| tasks.db | Local SQLite database file |
-
-> tasks.db is a local database file and should be ignored by Git.
+| File | Description |
+|------|-------------|
+| `main.py` | FastAPI application and API routes |
+| `auth.py` | JWT authentication and current-user verification |
+| `database.py` | PostgreSQL connection and database queries |
+| `schemas.py` | Pydantic request models |
+| `supabase_client.py` | Supabase client configuration |
+| `Dockerfile` | Docker image configuration |
+| `compose.yaml` | Docker Compose services |
+| `requirements.txt` | Python dependencies |
+| `.env.example` | Example environment variables |
+| `screenshots/` | Project screenshots |
+| `README.md` | Project documentation |
 
 ---
 
-## API Endpoints
+# Prerequisites
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| GET | `/` | Returns basic API information |
-| GET | `/health` | Health check |
-| GET | `/tasks` | Returns all tasks |
-| GET | `/tasks/{id}` | Returns one task |
-| POST | `/tasks` | Creates a new task |
-| PUT | `/tasks/{id}` | Updates an existing task |
-| DELETE | `/tasks/{id}` | Deletes a task |
-| GET | `/tasks?search=FastAPI` | Searches tasks by title |
-| GET | `/tasks?completed=true` | Returns completed tasks |
-| GET | `/tasks?completed=false` | Returns incomplete tasks |
----
+Make sure the following are installed:
 
-## Example Request
-
-### Create a Task
-
-```json
-{
-	"title": "Learn FastAPI"
-}
-```
-
-New tasks are created with:
-
-```json
-{
-	"completed": false
-}
-```
-
-### Update a Task
-
-```json
-{
-	"title": "Learn FastAPI deeply",
-	"completed": true
-}
-```
+- Docker Desktop
+- Git
+- A Supabase account
 
 ---
 
-## Database
+# Supabase Setup
 
-This project uses **SQLite** for task storage.
+This project uses Supabase Authentication.
 
-SQLite was chosen because:
+## 1. Create a Supabase project
 
-- The database is stored in a single file.
-- It does not require a separate database server.
-- Data survives when the FastAPI server is stopped and started again.
+Create a project from the Supabase dashboard.
 
-The database file is:
+## 2. Get the project credentials
+
+From the Supabase project settings, obtain:
+
+- Project URL
+- Publishable key
+
+These values are required by the application.
+
+---
+
+# Environment Variables
+
+Create a `.env` file in the project root.
+
+Use `.env.example` as a template:
+
+```env
+DATABASE_URL=postgres://postgres:dev@db:5432/tasks
+
+SUPABASE_URL=your_project_url
+SUPABASE_KEY=your_supabase_publishable_key
+```
+
+Replace the Supabase placeholder values with your own project credentials.
+
+The `.env` file is listed in `.gitignore` and **must never be committed to GitHub**.
+
+Do not share your Supabase credentials publicly.
+
+---
+
+# Getting Started
+
+## 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd Assignment-1-Task-API
+```
+
+## 2. Create the environment file
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+On macOS/Linux:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` and add your own Supabase credentials.
+
+## 3. Start the application
+
+Run:
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- FastAPI on port `8000`
+- PostgreSQL on the Docker network
+- Persistent PostgreSQL storage using a Docker volume
+
+The API will be available at:
 
 ```text
-tasks.db
+http://localhost:8000
 ```
-
-The `tasks` table is created automatically when the application starts.
-
-If the table is empty, the application inserts three seed tasks:
-
-1. Learn FastAPI
-2. Build CRUD API
-3. Write README
-
-### Table Schema
-
-| Column | Type | Description |
-| --- | --- | --- |
-| id | INTEGER | Primary key with auto-increment |
-| title | TEXT | Task title |
-| completed | BOOLEAN | Task completion status |
 
 ---
 
-## Validation and Behavior
+# API Documentation
 
-- Empty or whitespace-only task titles return HTTP `400`.
-- Missing task IDs return HTTP `404`.
-- Successful task creation returns HTTP `201 Created`.
-- Successful task deletion returns HTTP `204 No Content`.
-- Tasks persist across server restarts.
-- SQL queries use parameterized placeholders instead of string concatenation.
+FastAPI automatically provides interactive API documentation.
+
+### Swagger UI
+
+```text
+http://localhost:8000/docs
+```
+
+### ReDoc
+
+```text
+http://localhost:8000/redoc
+```
+
+Swagger UI can be used to test the API, including authenticated protected endpoints.
 
 ---
 
-## Exploring SQLite
+# Authentication
 
-DB Browser for SQLite was used to execute SQL directly against the `tasks.db` file.
+The API uses **Supabase Auth** for authentication.
 
-Example query:
+## Signup
 
-```sql
-SELECT * FROM tasks WHERE completed = 1;
+Create a new account using:
+
+```text
+POST /auth/signup
 ```
 
-This returns only completed tasks.
+Example request:
 
-The database was also updated manually using:
-
-```sql
-UPDATE tasks SET completed = 1;
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}
 ```
-
-After saving the database change in DB Browser for SQLite, the API reflected the updated `completed` values through `GET /tasks` without restarting FastAPI.
-
-This demonstrated that the API and DB Browser for SQLite were reading the same database file.
 
 ---
 
-## Getting Started
+## Login
 
-### 1. Install Dependencies
+Login using:
 
-```bash
-pip install -r requirements.txt
+```text
+POST /auth/login
 ```
 
-### 2. Start the Server
+Example request:
 
-```bash
-uvicorn main:app --reload
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}
 ```
 
-### 3. Open API Documentation
+A successful login returns an access token:
 
-- Swagger UI: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
+```json
+{
+  "access_token": "your_access_token",
+  "refresh_token": "your_refresh_token"
+}
+```
+
+The `access_token` is used to access protected endpoints.
 
 ---
 
-## Example Usage
+## Using the JWT
 
-### List Tasks
+Protected endpoints require the access token in the HTTP Authorization header:
 
-```bash
-curl http://127.0.0.1:8000/tasks
+```text
+Authorization: Bearer <access_token>
 ```
 
-### Create a Task
+In Swagger UI:
 
-```bash
-curl -X POST http://127.0.0.1:8000/tasks \
-	-H "Content-Type: application/json" \
-	-d "{\"title\": \"Write README\"}"
-```
+1. Open `/docs`
+2. Click **Authorize**
+3. Enter the access token
+4. Click **Authorize**
+5. Use the protected endpoints
 
-### Update a Task
-
-```bash
-curl -X PUT http://127.0.0.1:8000/tasks/1 \
-	-H "Content-Type: application/json" \
-	-d "{\"title\": \"Learn FastAPI deeply\", \"completed\": true}"
-```
-
-### Delete a Task
-
-```bash
-curl -X DELETE http://127.0.0.1:8000/tasks/1
-```
 ---
 
-## Optional SQL Features
+# API Reference
 
-Tasks can also be searched and filtered directly through SQL queries.
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|----------------|
+| POST | `/auth/signup` | Create a new user account | No |
+| POST | `/auth/login` | Login and receive access token | No |
+| POST | `/auth/logout` | Logout the authenticated user | Yes |
+| GET | `/public/info` | Public information | No |
+| GET | `/protected/profile` | Get authenticated user profile | Yes |
+| GET | `/protected/dashboard` | Access protected dashboard | Yes |
+| GET | `/` | API information | No |
+| GET | `/health` | Health check | No |
+| GET | `/tasks` | Get all tasks | No |
+| GET | `/tasks/{id}` | Get a task by ID | No |
+| POST | `/tasks` | Create a task | No |
+| PUT | `/tasks/{id}` | Update a task | No |
+| DELETE | `/tasks/{id}` | Delete a task | No |
 
-### Search Tasks
+---
+
+# Task Search and Filtering
+
+The `/tasks` endpoint supports optional query parameters.
+
+## Search by title
 
 ```text
 GET /tasks?search=FastAPI
 ```
-Uses SQL `LIKE` to search task titles.
 
-### Filter by Completion Status
+## Filter by completion status
 
 ```text
 GET /tasks?completed=true
-GET /tasks?completed=false
-```
-Uses a SQL `WHERE completed = ?` condition to return tasks by their completion status.
-
----
-
-## Screenshots
-
-### Assignment 1 API
-
-![Create Task](screenshots/Create%20Task.png)
-
-![Delete Task](screenshots/Delete%20task.png)
-
-![Listing Task](screenshots/Listing%20Task.png)
-
-![Swagger UI](screenshots/Swagger%20UI.png)
-
-![Update Task](screenshots/Update%20Task.png)
-
-### Stage 4: Exploring SQLite
-
-![Database Update](screenshots/Database%20Update.png)
-
-![API Reflects Database Change](screenshots/API%20Reflects%20Database%20Change.png)
-
----
-
-## What I Learned
-
-- Building REST API endpoints with FastAPI
-- Using Pydantic for request validation
-- Performing CRUD operations with SQLite
-- Using parameterized SQL queries
-- Using SQL `LIKE` and `WHERE` clauses for database-level filtering
-- Understanding database persistence across server restarts
-- Testing APIs using Swagger UI and command-line requests
-- Exploring and modifying a SQLite database directly using DB Browser for SQLite
-
----
-
-## PostgreSQL with Docker
-
-Start PostgreSQL:
-
-```bash
-docker run --name taskdb -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=tasks -p 5432:5432 -v taskdata:/var/lib/postgresql/data -d postgres:17
 ```
 
-Check the running container:
-
-```bash
-docker ps
-```
-
-Connect to PostgreSQL:
-
-```bash
-docker exec -it taskdb psql -U postgres -d tasks
-```
-
-
-Exit PostgreSQL :
+or:
 
 ```text
-\q
+GET /tasks?completed=false
 ```
-...
+
+---
+
+# Example Requests
+
+## Create a Task
+
+```http
+POST /tasks
+```
+
+Request body:
+
+```json
+{
+  "title": "Learn Docker"
+}
+```
+
+---
+
+## Update a Task
+
+```http
+PUT /tasks/1
+```
+
+Request body:
+
+```json
+{
+  "title": "Learn Docker Compose",
+  "completed": true
+}
+```
+
+---
+
+## Get All Tasks
+
+```http
+GET /tasks
+```
+
+Example response:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Learn FastAPI",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "title": "Build CRUD API",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "title": "Write README",
+    "completed": true
+  }
+]
+```
+
+---
+
+# Database
+
+The application uses **PostgreSQL** running inside Docker.
+
+On startup, the application:
+
+- Connects to PostgreSQL
+- Creates the `tasks` table if it does not exist
+- Inserts sample tasks if the table is empty
+
+## Table Schema
+
+| Column | Type |
+|--------|------|
+| `id` | SERIAL PRIMARY KEY |
+| `title` | TEXT NOT NULL |
+| `completed` | BOOLEAN NOT NULL |
+
+---
+
+# Database Persistence
+
+Docker Compose uses a named volume for PostgreSQL data.
+
+This allows task data to remain available when the containers are restarted.
+
+```text
+taskdata
+```
+
+---
+
+# Validation and Error Handling
+
+The API includes basic validation and HTTP error handling.
+
+Examples:
+
+- Empty task titles return `400 Bad Request`
+- Missing authentication returns `401 Unauthorized`
+- Invalid or expired JWTs return `401 Unauthorized`
+- Unknown task IDs return `404 Not Found`
+- Successful task creation returns `201 Created`
+- Successful deletion returns `204 No Content`
+
+---
+
+# Security
+
+The project follows basic security practices:
+
+- Supabase handles user authentication
+- JWTs are verified before protected routes are accessed
+- Protected endpoints require Bearer authentication
+- SQL queries use parameterized placeholders
+- `.env` is excluded from Git using `.gitignore`
+- Supabase credentials are stored in environment variables
+- Actual credentials are not included in the repository
+
+---
+
+# Swagger UI
+
+Swagger UI provides an interactive interface for testing the API.
+
+Protected routes display a lock icon and can be accessed after providing a valid Bearer token.
+
+![Swagger UI](screenshots/Swagger-UI.png)
+
+---
+
+# Screenshots
+
+## Swagger UI
+
+![Swagger UI](screenshots/Swagger-UI.png)
+
+---
+
+# What I Learned
+
+- Building REST APIs using FastAPI
+- Request validation with Pydantic
+- CRUD operations with PostgreSQL
+- Parameterized SQL queries
+- Connecting Python to PostgreSQL using Psycopg
+- Running services with Docker and Docker Compose
+- Persisting database data using Docker volumes
+- User authentication with Supabase
+- JWT-based authentication
+- Protecting API routes
+- Testing authenticated endpoints using Swagger UI
+- Managing environment variables securely
+- Documenting and publishing a backend project on GitHub
+
+---
